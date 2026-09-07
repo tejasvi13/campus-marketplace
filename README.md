@@ -2,7 +2,10 @@
 
 Student resource exchange platform for a single college.
 
-**Stage 1 covers Module 1 only: user authentication.** 
+**Module 1 only: user authentication.**
+
+- Stage 1: built in plain JavaScript and JSX
+- Stage 2: converted to TypeScript. Same logic, same routes, same screens.
 
 ---
 
@@ -24,20 +27,25 @@ is visible while you build. Hashing comes later.
 ```
 campus-marketplace/
 ├── backend/
-│   ├── config/db.js              MongoDB connection
-│   ├── models/User.js            User schema, including the OTP fields
-│   ├── controllers/authController.js
-│   ├── routes/authRoutes.js
-│   ├── utils/allowedEmail.js     which addresses may register
-│   ├── utils/otp.js              generate, expire and print the code
-│   ├── seed/seedUser.js          creates the one existing student
-│   └── server.js
+│   ├── tsconfig.json
+│   ├── config/db.ts              MongoDB connection
+│   ├── models/User.ts            IUser interface + schema
+│   ├── controllers/authController.ts
+│   ├── routes/authRoutes.ts
+│   ├── utils/allowedEmail.ts     which addresses may register
+│   ├── utils/otp.ts              generate, expire and print the code
+│   ├── seed/seedUser.ts          creates the one existing student
+│   └── server.ts
 └── frontend/
+    ├── tsconfig.json
+    ├── tsconfig.node.json
+    ├── vite.config.ts
     └── src/
-        ├── api/auth.js           every call to the backend
+        ├── types.ts              shapes shared across the screens
+        ├── api/auth.ts           every call to the backend + ApiError
         ├── components/           AuthLayout, Field, Notice, OtpInput
         ├── pages/                Login, Register, VerifyOtp, Home
-        ├── App.jsx               routes
+        ├── App.tsx               routes
         └── styles.css
 ```
 
@@ -57,7 +65,7 @@ npm run seed              # creates jtejasvi@student.edu
 npm run dev
 ```
 
-The server starts on `http://localhost:5000`. **Keep this terminal visible —
+The server starts on `http://localhost:5555`. **Keep this terminal visible —
 every OTP is printed here.**
 
 ### 2. Frontend
@@ -79,7 +87,7 @@ Open `http://localhost:5173`.
 | Field | Value |
 | --- | --- |
 | Name | J Tejasvi |
-| Register number | 2026 |
+| Register number | 2026611028 |
 | E-mail | jtejasvi@student.edu |
 | Password | tejasvi123 |
 | Verified | yes |
@@ -105,9 +113,12 @@ Open `backend/utils/allowedEmail.js`.
 
 ```js
 const ALLOWED_DOMAINS = ["student.edu"];
+const ALLOWED_EMAILS = [];
 ```
 
-Add a domain to the first list to accept everyone at that domain. 
+Add a domain to the first list to accept everyone at that domain. Add a full
+address to the second list to allow one specific person, which is handy if you
+want to test with your own Gmail.
 
 ---
 
@@ -123,3 +134,29 @@ Add a domain to the first list to accept everyone at that domain.
 
 ---
 
+## TypeScript notes
+
+Both halves are type checked separately:
+
+```bash
+cd backend  && npm run typecheck
+cd frontend && npm run typecheck
+```
+
+`npm run dev` on the backend uses `ts-node-dev`, so there is no build step
+while developing. `npm run build` compiles to `backend/dist/`, and `npm start`
+runs the compiled output.
+
+Where the types live:
+
+| File | What it describes |
+| --- | --- |
+| `backend/models/User.ts` | `IUser` — one user document |
+| `backend/controllers/authController.ts` | `PublicUser` and the four request bodies |
+| `frontend/src/types.ts` | `User`, `AuthResponse`, the form shapes, router state |
+| `frontend/src/api/auth.ts` | `ApiError`, a class extending `Error` |
+
+## Next stages
+
+- Stage 3: Module 2, profile management
+- Stage 4: Module 3, listings

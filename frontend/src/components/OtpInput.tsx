@@ -1,18 +1,29 @@
 import { useRef } from "react";
+import type { ChangeEvent, ClipboardEvent, KeyboardEvent } from "react";
 
-export default function OtpInput({ value, onChange, length = 6 }) {
-  const boxes = useRef([]);
+interface OtpInputProps {
+  value: string;
+  onChange: (value: string) => void;
+  length?: number;
+}
 
-  const digits = value.padEnd(length, " ").slice(0, length).split("");
+// Six single-character boxes that behave like one field.
+// `value` is the whole code as a string, e.g. "482913".
+export default function OtpInput({ value, onChange, length = 6 }: OtpInputProps) {
+  const boxes = useRef<(HTMLInputElement | null)[]>([]);
 
-  function setDigit(index, digit) {
-    const next = digits.slice();
+  const digits: string[] = value.padEnd(length, " ").slice(0, length).split("");
+
+  function setDigit(index: number, digit: string): void {
+    const next: string[] = digits.slice();
     next[index] = digit;
+    // Only trailing blanks are dropped, so clearing a middle box does not
+    // shuffle the digits after it.
     onChange(next.join("").replace(/\s+$/, ""));
   }
 
-  function handleChange(index, event) {
-    const typed = event.target.value.replace(/\D/g, "");
+  function handleChange(index: number, event: ChangeEvent<HTMLInputElement>): void {
+    const typed: string = event.target.value.replace(/\D/g, "");
     if (!typed) return;
 
     // Typing a single digit moves you along.
@@ -22,7 +33,7 @@ export default function OtpInput({ value, onChange, length = 6 }) {
     }
   }
 
-  function handleKeyDown(index, event) {
+  function handleKeyDown(index: number, event: KeyboardEvent<HTMLInputElement>): void {
     if (event.key === "Backspace") {
       event.preventDefault();
       if (digits[index].trim()) {
@@ -42,9 +53,9 @@ export default function OtpInput({ value, onChange, length = 6 }) {
     }
   }
 
-  function handlePaste(event) {
+  function handlePaste(event: ClipboardEvent<HTMLDivElement>): void {
     event.preventDefault();
-    const pasted = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, length);
+    const pasted: string = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, length);
     if (!pasted) return;
 
     onChange(pasted);
@@ -53,10 +64,12 @@ export default function OtpInput({ value, onChange, length = 6 }) {
 
   return (
     <div className="otp" onPaste={handlePaste}>
-      {digits.map((digit, index) => (
+      {digits.map((digit: string, index: number) => (
         <input
           key={index}
-          ref={(element) => (boxes.current[index] = element)}
+          ref={(element: HTMLInputElement | null) => {
+            boxes.current[index] = element;
+          }}
           className="otp__box"
           inputMode="numeric"
           maxLength={1}

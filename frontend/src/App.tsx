@@ -1,31 +1,32 @@
 import { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
-import LoginPage from "./pages/LoginPage.jsx";
-import RegisterPage from "./pages/RegisterPage.jsx";
-import VerifyOtpPage from "./pages/VerifyOtpPage.jsx";
-import HomePage from "./pages/HomePage.jsx";
+import LoginPage from "./pages/LoginPage.js";
+import RegisterPage from "./pages/RegisterPage.js";
+import VerifyOtpPage from "./pages/VerifyOtpPage.js";
+import HomePage from "./pages/HomePage.tsx";
+import type { User } from "./types.ts";
 
-const STORAGE_KEY = "campus_marketplace_user";
+const STORAGE_KEY: string = "campus_marketplace_user";
 
-function readStoredUser() {
+function readStoredUser(): User | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch (error) {
+    const raw: string | null = localStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as User) : null;
+  } catch {
     return null;
   }
 }
 
 export default function App() {
-  const [user, setUser] = useState(readStoredUser);
+  const [user, setUser] = useState<User | null>(readStoredUser);
 
-  function handleSignedIn(signedInUser) {
+  function handleSignedIn(signedInUser: User): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(signedInUser));
     setUser(signedInUser);
   }
 
-  function handleSignOut() {
+  function handleSignOut(): void {
     localStorage.removeItem(STORAGE_KEY);
     setUser(null);
   }

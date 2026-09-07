@@ -1,10 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import App from "./App.jsx";
+import App from "./App.tsx";
 import "./styles.css";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+// The div is declared in index.html, so we tell TypeScript it is really there.
+const rootElement = document.getElementById("root") as HTMLElement;
+
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <BrowserRouter>
       <App />

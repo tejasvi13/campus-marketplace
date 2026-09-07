@@ -1,11 +1,14 @@
 import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import AuthLayout from "../components/AuthLayout.jsx";
-import Field from "../components/Field.jsx";
-import Notice from "../components/Notice.jsx";
-import { registerUser } from "../api/auth.js";
 
-const emptyForm = {
+import AuthLayout from "../components/AuthLayout.js";
+import Field from "../components/Field.js";
+import Notice from "../components/Notice.js";
+import { registerUser } from "../api/auth.js";
+import type { RegisterForm } from "../types.ts";
+
+const emptyForm: RegisterForm = {
   name: "",
   regNo: "",
   email: "",
@@ -17,15 +20,16 @@ const emptyForm = {
 export default function RegisterPage() {
   const navigate = useNavigate();
 
-  const [form, setForm] = useState(emptyForm);
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [form, setForm] = useState<RegisterForm>(emptyForm);
+  const [error, setError] = useState<string>("");
+  const [busy, setBusy] = useState<boolean>(false);
 
-  function handleChange(event) {
-    setForm({ ...form, [event.target.name]: event.target.value });
+  function handleChange(event: ChangeEvent<HTMLInputElement>): void {
+    const { name, value } = event.target;
+    setForm((current) => ({ ...current, [name]: value }));
   }
 
-  async function handleSubmit(event) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     setError("");
 
@@ -46,8 +50,8 @@ export default function RegisterPage() {
       });
 
       navigate("/verify", { state: { email: data.email, message: data.message } });
-    } catch (failure) {
-      setError(failure.message);
+    } catch (failure: unknown) {
+      setError(failure instanceof Error ? failure.message : "Something went wrong.");
     } finally {
       setBusy(false);
     }

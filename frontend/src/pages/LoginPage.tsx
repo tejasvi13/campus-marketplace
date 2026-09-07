@@ -1,42 +1,53 @@
 import { useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import AuthLayout from "../components/AuthLayout.jsx";
-import Field from "../components/Field.jsx";
-import Notice from "../components/Notice.jsx";
-import { loginUser } from "../api/auth.js";
 
-export default function LoginPage({ onSignedIn }) {
+import AuthLayout from "../components/AuthLayout.js";
+import Field from "../components/Field.js";
+import Notice from "../components/Notice.js";
+import { loginUser, ApiError } from "../api/auth.js";
+import type { LoginForm, LoginState, User } from "../types.ts";
+
+interface LoginPageProps {
+  onSignedIn: (user: User) => void;
+}
+
+export default function LoginPage({ onSignedIn }: LoginPageProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const justVerified = location.state?.verified === true;
+  const state = location.state as LoginState | null;
+  const justVerified: boolean = state?.verified === true;
 
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [form, setForm] = useState<LoginForm>({ email: "", password: "" });
+  const [error, setError] = useState<string>("");
+  const [busy, setBusy] = useState<boolean>(false);
 
-  function handleChange(event) {
-    setForm({ ...form, [event.target.name]: event.target.value });
+  function handleChange(event: ChangeEvent<HTMLInputElement>): void {
+    const { name, value } = event.target;
+    setForm((current) => ({ ...current, [name]: value }));
   }
 
-  async function handleSubmit(event) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     setError("");
     setBusy(true);
 
     try {
       const data = await loginUser(form.email, form.password);
-      onSignedIn(data.user);
-      navigate("/home");
-    } catch (failure) {
+      if (data.user) {
+        onSignedIn(data.user);
+        navigate("/home");
+      }
+    } catch (failure: unknown) {
       // An unverified account gets sent to the code screen instead of an error.
-      if (failure.data && failure.data.needsVerification) {
+      if (failure instanceof ApiError && failure.data.needsVerification) {
         navigate("/verify", {
           state: { email: failure.data.email, message: failure.data.message },
         });
         return;
       }
-      setError(failure.message);
+      setError(failure instanceof Error ? failure.message : "Something went wrong.");
     } finally {
       setBusy(false);
     }

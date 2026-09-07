@@ -1,14 +1,47 @@
-const User = require("../models/User");
-const {
-  isValidEmailFormat,
-  isAllowedEmail,
-  allowedDomainsText,
-} = require("../utils/allowedEmail");
-const { generateOtp, getOtpExpiry, printOtp, isOtpExpired } = require("../utils/otp");
+import { Request, Response } from "express";
 
-function publicUser(user) {
+import User, { IUser } from "../models/User";
+import { isValidEmailFormat, isAllowedEmail, allowedDomainsText } from "../utils/allowedEmail";
+import { generateOtp, getOtpExpiry, printOtp, isOtpExpired } from "../utils/otp";
+
+// What the frontend is allowed to see. The password and the OTP
+// never appear in this shape.
+export interface PublicUser {
+  id: string;
+  name: string;
+  regNo: string;
+  email: string;
+  department: string;
+  isVerified: boolean;
+}
+
+// The bodies we expect to arrive on each route.
+interface RegisterBody {
+  name?: string;
+  regNo?: string;
+  email?: string;
+  department?: string;
+  password?: string;
+}
+
+interface VerifyOtpBody {
+  email?: string;
+  otp?: string;
+}
+
+interface ResendOtpBody {
+  email?: string;
+}
+
+interface LoginBody {
+  email?: string;
+  password?: string;
+}
+
+// Strips the fields the frontend should never see.
+function publicUser(user: IUser): PublicUser {
   return {
-    id: user._id,
+    id: String(user._id),
     name: user.name,
     regNo: user.regNo,
     email: user.email,
@@ -17,14 +50,20 @@ function publicUser(user) {
   };
 }
 
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
 // POST /api/auth/register
-async function register(req, res) {
+export async function register(req: Request, res: Response): Promise<Response> {
   try {
-    const name = String(req.body.name || "").trim();
-    const regNo = String(req.body.regNo || "").trim();
-    const email = String(req.body.email || "").toLowerCase().trim();
-    const department = String(req.body.department || "").trim();
-    const password = String(req.body.password || "");
+    const body: RegisterBody = req.body;
+
+    const name: string = String(body.name || "").trim();
+    const regNo: string = String(body.regNo || "").trim();
+    const email: string = String(body.email || "").toLowerCase().trim();
+    const department: string = String(body.department || "").trim();
+    const password: string = String(body.password || "");
 
     if (!name || !regNo || !email || !password) {
       return res.status(400).json({ message: "Fill in your name, register number, e-mail and password." });
@@ -44,11 +83,11 @@ async function register(req, res) {
       return res.status(400).json({ message: "Use a password of at least 6 characters." });
     }
 
-    const existingEmail = await User.findOne({ email });
+    const existingEmail: IUser | null = await User.findOne({ email });
     if (existingEmail) {
       // If they started earlier but never verified, let them continue instead of blocking.
       if (!existingEmail.isVerified) {
-        const code = generateOtp();
+        const code: string = generateOtp();
         existingEmail.name = name;
         existingEmail.regNo = regNo;
         existingEmail.department = department;
@@ -68,14 +107,14 @@ async function register(req, res) {
       return res.status(409).json({ message: "This e-mail is already registered. Sign in instead." });
     }
 
-    const existingRegNo = await User.findOne({ regNo });
+    const existingRegNo: IUser | null = await User.findOne({ regNo });
     if (existingRegNo) {
       return res.status(409).json({ message: "This register number is already in use." });
     }
 
-    const code = generateOtp();
+    const code: string = generateOtp();
 
-    const user = await User.create({
+    const user: IUser = await User.create({
       name,
       regNo,
       email,
@@ -92,23 +131,25 @@ async function register(req, res) {
       message: "Account created. Enter the code printed in the server terminal.",
       email: user.email,
     });
-  } catch (error) {
-    console.error("register error:", error.message);
+  } catch (error: unknown) {
+    console.error("register error:", errorMessage(error));
     return res.status(500).json({ message: "Something broke on the server. Check the terminal." });
   }
 }
 
 // POST /api/auth/verify-otp
-async function verifyOtp(req, res) {
+export async function verifyOtp(req: Request, res: Response): Promise<Response> {
   try {
-    const email = String(req.body.email || "").toLowerCase().trim();
-    const otp = String(req.body.otp || "").trim();
+    const body: VerifyOtpBody = req.body;
+
+    const email: string = String(body.email || "").toLowerCase().trim();
+    const otp: string = String(body.otp || "").trim();
 
     if (!email || !otp) {
       return res.status(400).json({ message: "Enter the six digit code." });
     }
 
-    const user = await User.findOne({ email });
+    const user: IUser | null = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "No account found for that e-mail." });
     }
@@ -133,18 +174,20 @@ async function verifyOtp(req, res) {
     console.log("Verified ->", user.email);
 
     return res.status(200).json({ message: "E-mail verified. You can sign in now.", user: publicUser(user) });
-  } catch (error) {
-    console.error("verifyOtp error:", error.message);
+  } catch (error: unknown) {
+    console.error("verifyOtp error:", errorMessage(error));
     return res.status(500).json({ message: "Something broke on the server. Check the terminal." });
   }
 }
 
 // POST /api/auth/resend-otp
-async function resendOtp(req, res) {
+export async function resendOtp(req: Request, res: Response): Promise<Response> {
   try {
-    const email = String(req.body.email || "").toLowerCase().trim();
+    const body: ResendOtpBody = req.body;
 
-    const user = await User.findOne({ email });
+    const email: string = String(body.email || "").toLowerCase().trim();
+
+    const user: IUser | null = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "No account found for that e-mail." });
     }
@@ -153,7 +196,7 @@ async function resendOtp(req, res) {
       return res.status(400).json({ message: "This account is already verified." });
     }
 
-    const code = generateOtp();
+    const code: string = generateOtp();
     user.otpCode = code;
     user.otpExpiresAt = getOtpExpiry();
     await user.save();
@@ -161,23 +204,25 @@ async function resendOtp(req, res) {
     printOtp(user.email, code, "code requested again");
 
     return res.status(200).json({ message: "New code printed in the server terminal." });
-  } catch (error) {
-    console.error("resendOtp error:", error.message);
+  } catch (error: unknown) {
+    console.error("resendOtp error:", errorMessage(error));
     return res.status(500).json({ message: "Something broke on the server. Check the terminal." });
   }
 }
 
 // POST /api/auth/login
-async function login(req, res) {
+export async function login(req: Request, res: Response): Promise<Response> {
   try {
-    const email = String(req.body.email || "").toLowerCase().trim();
-    const password = String(req.body.password || "");
+    const body: LoginBody = req.body;
+
+    const email: string = String(body.email || "").toLowerCase().trim();
+    const password: string = String(body.password || "");
 
     if (!email || !password) {
       return res.status(400).json({ message: "Enter your e-mail and password." });
     }
 
-    const user = await User.findOne({ email });
+    const user: IUser | null = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "No account found for that e-mail. Register first." });
     }
@@ -187,8 +232,7 @@ async function login(req, res) {
     }
 
     if (!user.isVerified) {
-      // Send them straight to the OTP screen with a fresh code.
-      const code = generateOtp();
+      const code: string = generateOtp();
       user.otpCode = code;
       user.otpExpiresAt = getOtpExpiry();
       await user.save();
@@ -203,10 +247,8 @@ async function login(req, res) {
     }
 
     return res.status(200).json({ message: "Signed in.", user: publicUser(user) });
-  } catch (error) {
-    console.error("login error:", error.message);
+  } catch (error: unknown) {
+    console.error("login error:", errorMessage(error));
     return res.status(500).json({ message: "Something broke on the server. Check the terminal." });
   }
 }
-
-module.exports = { register, verifyOtp, resendOtp, login };

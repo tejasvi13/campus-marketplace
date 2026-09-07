@@ -1,4 +1,12 @@
-export default function HomePage({ user, onSignOut }) {
+import type { User } from "../types.ts";
+
+interface HomePageProps {
+  user: User;
+  onSignOut: () => void;
+}
+
+// Placeholder home screen. Modules 2 to 9 will be built on top of this.
+export default function HomePage({ user, onSignOut }: HomePageProps) {
   return (
     <div className="home">
       <header className="home__bar">
@@ -34,6 +42,10 @@ export default function HomePage({ user, onSignOut }) {
           </div>
         </dl>
 
+        <p className="home__next">
+          Module 1 ends here. Profiles, listings, browsing and the rest of the
+          marketplace get added in the next stages.
+        </p>
       </div>
     </div>
   );

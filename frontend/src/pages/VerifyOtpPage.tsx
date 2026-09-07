@@ -1,26 +1,31 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
 import { Link, useLocation, useNavigate, Navigate } from "react-router-dom";
-import AuthLayout from "../components/AuthLayout.jsx";
-import Notice from "../components/Notice.jsx";
-import OtpInput from "../components/OtpInput.jsx";
+
+import AuthLayout from "../components/AuthLayout.js";
+import Notice from "../components/Notice.js";
+import OtpInput from "../components/OtpInput.tsx";
 import { verifyOtp, resendOtp } from "../api/auth.js";
+import type { VerifyState } from "../types.ts";
 
 export default function VerifyOtpPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const email = location.state?.email || "";
+  const state = location.state as VerifyState | null;
+  const email: string = state?.email || "";
 
-  const [code, setCode] = useState("");
-  const [error, setError] = useState("");
-  const [good, setGood] = useState(location.state?.message || "");
-  const [busy, setBusy] = useState(false);
+  const [code, setCode] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [good, setGood] = useState<string>(state?.message || "");
+  const [busy, setBusy] = useState<boolean>(false);
 
+  // Landing here directly, with no e-mail to verify, makes no sense.
   if (!email) {
     return <Navigate to="/" replace />;
   }
 
-  async function handleSubmit(event) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
     setError("");
 
@@ -34,15 +39,15 @@ export default function VerifyOtpPage() {
     try {
       await verifyOtp(email, code);
       navigate("/", { state: { verified: true } });
-    } catch (failure) {
-      setError(failure.message);
+    } catch (failure: unknown) {
+      setError(failure instanceof Error ? failure.message : "Something went wrong.");
       setCode("");
     } finally {
       setBusy(false);
     }
   }
 
-  async function handleResend() {
+  async function handleResend(): Promise<void> {
     setError("");
     setGood("");
 
@@ -50,8 +55,8 @@ export default function VerifyOtpPage() {
       const data = await resendOtp(email);
       setGood(data.message);
       setCode("");
-    } catch (failure) {
-      setError(failure.message);
+    } catch (failure: unknown) {
+      setError(failure instanceof Error ? failure.message : "Something went wrong.");
     }
   }
 
@@ -66,7 +71,7 @@ export default function VerifyOtpPage() {
         <p className="terminal-note__title">Nothing is being e-mailed yet</p>
         <p>
           This is Stage 1, so the code is printed in the terminal where your
-          backend server is running.
+          backend server is running. Copy it from there.
         </p>
       </div>
 

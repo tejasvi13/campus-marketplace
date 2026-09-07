@@ -1,10 +1,23 @@
-require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
 
-const mongoose = require("mongoose");
-const connectDB = require("../config/db");
-const User = require("../models/User");
+import mongoose from "mongoose";
 
-const EXISTING_STUDENT = {
+import connectDB from "../config/db";
+import User from "../models/User";
+
+interface SeedStudent {
+  name: string;
+  regNo: string;
+  email: string;
+  department: string;
+  password: string;
+  isVerified: boolean;
+  otpCode: string | null;
+  otpExpiresAt: Date | null;
+}
+
+const EXISTING_STUDENT: SeedStudent = {
   name: "J Tejasvi",
   regNo: "2026611028",
   email: "jtejasvi@student.edu",
@@ -15,7 +28,7 @@ const EXISTING_STUDENT = {
   otpExpiresAt: null,
 };
 
-async function run() {
+async function run(): Promise<void> {
   await connectDB();
 
   const existing = await User.findOne({ email: EXISTING_STUDENT.email });
@@ -34,7 +47,8 @@ async function run() {
   process.exit(0);
 }
 
-run().catch((error) => {
-  console.error("Seeding failed:", error.message);
+run().catch((error: unknown) => {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error("Seeding failed:", message);
   process.exit(1);
 });
