@@ -4,8 +4,6 @@ import User, { IUser } from "../models/User";
 import { isValidEmailFormat, isAllowedEmail, allowedDomainsText } from "../utils/allowedEmail";
 import { generateOtp, getOtpExpiry, printOtp, isOtpExpired } from "../utils/otp";
 
-// What the frontend is allowed to see. The password and the OTP
-// never appear in this shape.
 export interface PublicUser {
   id: string;
   name: string;
@@ -15,7 +13,6 @@ export interface PublicUser {
   isVerified: boolean;
 }
 
-// The bodies we expect to arrive on each route.
 interface RegisterBody {
   name?: string;
   regNo?: string;
@@ -38,7 +35,6 @@ interface LoginBody {
   password?: string;
 }
 
-// Strips the fields the frontend should never see.
 function publicUser(user: IUser): PublicUser {
   return {
     id: String(user._id),
@@ -85,7 +81,6 @@ export async function register(req: Request, res: Response): Promise<Response> {
 
     const existingEmail: IUser | null = await User.findOne({ email });
     if (existingEmail) {
-      // If they started earlier but never verified, let them continue instead of blocking.
       if (!existingEmail.isVerified) {
         const code: string = generateOtp();
         existingEmail.name = name;
@@ -232,6 +227,7 @@ export async function login(req: Request, res: Response): Promise<Response> {
     }
 
     if (!user.isVerified) {
+      // Send them straight to the OTP screen with a fresh code.
       const code: string = generateOtp();
       user.otpCode = code;
       user.otpExpiresAt = getOtpExpiry();

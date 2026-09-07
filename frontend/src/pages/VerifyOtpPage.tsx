@@ -2,10 +2,10 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link, useLocation, useNavigate, Navigate } from "react-router-dom";
 
-import AuthLayout from "../components/AuthLayout.js";
-import Notice from "../components/Notice.js";
+import AuthLayout from "../components/AuthLayout.tsx";
+import Notice from "../components/Notice.tsx";
 import OtpInput from "../components/OtpInput.tsx";
-import { verifyOtp, resendOtp } from "../api/auth.js";
+import { verifyOtp, resendOtp } from "../api/auth.ts";
 import type { VerifyState } from "../types.ts";
 
 export default function VerifyOtpPage() {
@@ -20,7 +20,6 @@ export default function VerifyOtpPage() {
   const [good, setGood] = useState<string>(state?.message || "");
   const [busy, setBusy] = useState<boolean>(false);
 
-  // Landing here directly, with no e-mail to verify, makes no sense.
   if (!email) {
     return <Navigate to="/" replace />;
   }

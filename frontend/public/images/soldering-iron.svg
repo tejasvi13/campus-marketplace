@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="Soldering iron kit">
+  <rect width="400" height="300" fill="#DDE7E1"/>
+  <rect x="96" y="150" width="130" height="26" rx="12" fill="#10312B" transform="rotate(-18 160 163)"/>
+  <rect x="212" y="118" width="60" height="12" rx="6" fill="#8FA39A" transform="rotate(-18 240 124)"/>
+  <path d="M268 104 L296 92 L282 118 Z" fill="#E8A317"/>
+  <path d="M74 178 C48 200 62 236 96 232" stroke="#2F6357" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <rect x="150" y="228" width="130" height="16" rx="8" fill="#2F6357"/>
+  <path d="M172 228 C186 200 232 200 248 228" stroke="#8FA39A" stroke-width="10" fill="none"/>
+  <circle cx="308" cy="200" r="26" fill="none" stroke="#8FA39A" stroke-width="12"/>
+</svg>

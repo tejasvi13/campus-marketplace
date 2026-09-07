@@ -6,6 +6,8 @@ import cors from "cors";
 
 import connectDB from "./config/db";
 import { authRouter } from "./routes/authRoutes";
+import { listingRouter } from "./routes/listingRoutes";
+import { userRouter } from "./routes/userRoutes";
 
 const app: Application = express();
 const PORT: number = Number(process.env.PORT || 5000);
@@ -13,14 +15,14 @@ const PORT: number = Number(process.env.PORT || 5000);
 app.use(cors());
 app.use(express.json());
 
-// A quick way to check the server is alive from the browser.
 app.get("/api/health", (req: Request, res: Response) => {
-  res.json({ status: "ok", stage: 2, module: "User Authentication" });
+  res.json({ status: "ok", stage: 3, modules: "1, 2, 3, 4" });
 });
 
 app.use("/api/auth", authRouter);
+app.use("/api/listings", listingRouter);
+app.use("/api/users", userRouter);
 
-// Anything else is a wrong URL.
 app.use((req: Request, res: Response) => {
   res.status(404).json({ message: "Route not found: " + req.originalUrl });
 });

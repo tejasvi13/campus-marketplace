@@ -5,6 +5,10 @@ export interface IUser extends Document {
   regNo: string;
   email: string;
   department: string;
+  year: string;
+  phone: string;
+  hostel: string;
+  about: string;
   password: string;
   isVerified: boolean;
   otpCode: string | null;
@@ -34,6 +38,26 @@ const userSchema = new Schema<IUser>(
       trim: true,
     },
     department: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    year: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    phone: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    hostel: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    about: {
       type: String,
       default: "",
       trim: true,

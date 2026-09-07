@@ -1,6 +1,19 @@
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
-const ledger = [
+// One row of the ledger on the left.
+interface LedgerEntry {
+  item: string;
+  note: string;
+}
+
+interface AuthLayoutProps {
+  children: ReactNode;
+}
+
+// The things students actually hand down each year. This is the
+// left half of every authentication screen.
+const ledger: LedgerEntry[] = [
   { item: "Engineering Mathematics, Vol. II", note: "passed on three times" },
   { item: "Casio fx-991EX", note: "on rent this semester" },
   { item: "Hero Sprint, hostel block C", note: "free to a first year" },
@@ -8,7 +21,7 @@ const ledger = [
   { item: "Study lamp, clip-on", note: "given away last week" },
 ];
 
-export default function AuthLayout({ children }) {
+export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <div className="shell">
       <aside className="ledger-panel">
@@ -25,7 +38,7 @@ export default function AuthLayout({ children }) {
         <div className="ledger">
           <h2 className="ledger__heading">Moving around campus right now</h2>
           <ul className="ledger__list">
-            {ledger.map((entry) => (
+            {ledger.map((entry: LedgerEntry) => (
               <li key={entry.item} className="ledger__row">
                 <span className="ledger__item">{entry.item}</span>
                 <span className="ledger__note">{entry.note}</span>

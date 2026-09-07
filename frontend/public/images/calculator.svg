@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="Scientific calculator">
+  <rect width="400" height="300" fill="#DDE7E1"/>
+  <rect x="140" y="40" width="120" height="220" rx="16" fill="#10312B"/>
+  <rect x="154" y="56" width="92" height="46" rx="7" fill="#F4F7F2"/>
+  <rect x="163" y="82" width="58" height="8" rx="4" fill="#2F6357"/>
+  <rect x="163" y="66" width="30" height="6" rx="3" fill="#B9C6BE"/>
+  <g fill="#2F6357">
+    <rect x="155" y="116" width="24" height="18" rx="5"/><rect x="187" y="116" width="24" height="18" rx="5"/>
+    <rect x="219" y="116" width="24" height="18" rx="5"/>
+    <rect x="155" y="142" width="24" height="18" rx="5"/><rect x="187" y="142" width="24" height="18" rx="5"/>
+    <rect x="219" y="142" width="24" height="18" rx="5"/>
+    <rect x="155" y="168" width="24" height="18" rx="5"/><rect x="187" y="168" width="24" height="18" rx="5"/>
+    <rect x="219" y="168" width="24" height="18" rx="5"/>
+    <rect x="155" y="194" width="24" height="18" rx="5"/><rect x="187" y="194" width="24" height="18" rx="5"/>
+  </g>
+  <rect x="219" y="194" width="24" height="44" rx="5" fill="#E8A317"/>
+  <rect x="155" y="220" width="56" height="18" rx="5" fill="#2F6357"/>
+</svg>

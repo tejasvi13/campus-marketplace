@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="Clip-on study lamp">
+  <rect width="400" height="300" fill="#DDE7E1"/>
+  <rect x="88" y="214" width="120" height="20" rx="9" fill="#10312B"/>
+  <rect x="104" y="196" width="40" height="26" rx="8" fill="#2F6357"/>
+  <rect x="130" y="120" width="14" height="88" rx="7" fill="#2F6357"/>
+  <rect x="136" y="112" width="120" height="14" rx="7" fill="#2F6357" transform="rotate(14 196 119)"/>
+  <path d="M232 96 L308 96 L288 152 L252 152 Z" fill="#E8A317"/>
+  <ellipse cx="270" cy="152" rx="18" ry="7" fill="#F4F7F2"/>
+  <circle cx="270" cy="182" r="20" fill="#E8A317" opacity="0.28"/>
+  <circle cx="270" cy="196" r="34" fill="#E8A317" opacity="0.16"/>
+</svg>

@@ -2,10 +2,11 @@
 
 Student resource exchange platform for a single college.
 
-**Module 1 only: user authentication.**
+Built in stages:
 
-- Stage 1: built in plain JavaScript and JSX
-- Stage 2: converted to TypeScript. Same logic, same routes, same screens.
+- Stage 1: Module 1, user authentication, in plain JavaScript and JSX
+- Stage 2: the same code converted to TypeScript
+- Stage 3: Modules 2, 3 and 4 — profiles, listings, and browse/search/filter
 
 ---
 

@@ -7,8 +7,6 @@ interface OtpInputProps {
   length?: number;
 }
 
-// Six single-character boxes that behave like one field.
-// `value` is the whole code as a string, e.g. "482913".
 export default function OtpInput({ value, onChange, length = 6 }: OtpInputProps) {
   const boxes = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -17,8 +15,6 @@ export default function OtpInput({ value, onChange, length = 6 }: OtpInputProps)
   function setDigit(index: number, digit: string): void {
     const next: string[] = digits.slice();
     next[index] = digit;
-    // Only trailing blanks are dropped, so clearing a middle box does not
-    // shuffle the digits after it.
     onChange(next.join("").replace(/\s+$/, ""));
   }
 

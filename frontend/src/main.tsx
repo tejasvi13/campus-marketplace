@@ -4,7 +4,6 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
 import "./styles.css";
 
-// The div is declared in index.html, so we tell TypeScript it is really there.
 const rootElement = document.getElementById("root") as HTMLElement;
 
 ReactDOM.createRoot(rootElement).render(

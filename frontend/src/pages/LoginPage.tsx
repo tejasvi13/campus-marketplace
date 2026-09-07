@@ -2,10 +2,11 @@ import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
-import AuthLayout from "../components/AuthLayout.js";
-import Field from "../components/Field.js";
-import Notice from "../components/Notice.js";
-import { loginUser, ApiError } from "../api/auth.js";
+import AuthLayout from "../components/AuthLayout.tsx";
+import Field from "../components/Field.tsx";
+import Notice from "../components/Notice.tsx";
+import { loginUser } from "../api/auth.ts";
+import { ApiError } from "../api/client.ts";
 import type { LoginForm, LoginState, User } from "../types.ts";
 
 interface LoginPageProps {
@@ -40,7 +41,6 @@ export default function LoginPage({ onSignedIn }: LoginPageProps) {
         navigate("/home");
       }
     } catch (failure: unknown) {
-      // An unverified account gets sent to the code screen instead of an error.
       if (failure instanceof ApiError && failure.data.needsVerification) {
         navigate("/verify", {
           state: { email: failure.data.email, message: failure.data.message },

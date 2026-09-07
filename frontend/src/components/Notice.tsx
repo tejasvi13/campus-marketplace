@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 
-// Only these two tones exist, so a union type is better than a plain string.
 export type NoticeTone = "error" | "good";
 
 interface NoticeProps {

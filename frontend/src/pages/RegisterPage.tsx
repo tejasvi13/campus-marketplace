@@ -2,10 +2,10 @@ import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import AuthLayout from "../components/AuthLayout.js";
-import Field from "../components/Field.js";
-import Notice from "../components/Notice.js";
-import { registerUser } from "../api/auth.js";
+import AuthLayout from "../components/AuthLayout.tsx";
+import Field from "../components/Field.tsx";
+import Notice from "../components/Notice.tsx";
+import { registerUser } from "../api/auth.ts";
 import type { RegisterForm } from "../types.ts";
 
 const emptyForm: RegisterForm = {
